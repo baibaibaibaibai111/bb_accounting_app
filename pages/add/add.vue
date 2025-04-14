@@ -159,63 +159,85 @@ export default {
 
 <style>
 .container {
-	padding: 20rpx;
+	padding: 30rpx;
+	background-color: #f5f7fa;
+	min-height: 100vh;
 }
 
 .form-group {
-	margin-bottom: 30rpx;
+	margin-bottom: 35rpx;
+	background-color: #fff;
+	border-radius: 16rpx;
+	padding: 25rpx;
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
 .form-title {
 	font-size: 28rpx;
-	color: #666;
-	margin-bottom: 10rpx;
+	color: #333;
+	margin-bottom: 15rpx;
+	font-weight: 500;
 }
 
 .type-selector {
 	display: flex;
-	background: #fff;
-	border-radius: 10rpx;
+	background: #f9f9f9;
+	border-radius: 12rpx;
 	overflow: hidden;
+	margin-top: 15rpx;
+	border: 1rpx solid #eee;
 }
 
 .type-item {
 	flex: 1;
 	text-align: center;
-	padding: 20rpx;
-	font-size: 28rpx;
-	background: #f5f5f5;
+	padding: 25rpx;
+	font-size: 30rpx;
+	color: #666;
+	transition: all 0.3s ease;
 }
 
 .type-item.active {
-	background: #4CAF50;
+	background: #3cc51f;
 	color: #fff;
+	font-weight: 500;
 }
 
 .amount-input {
-	background: #fff;
-	padding: 20rpx;
-	border-radius: 10rpx;
-	font-size: 32rpx;
+	background: #f9f9f9;
+	padding: 25rpx;
+	border-radius: 12rpx;
+	font-size: 36rpx;
+	border: 1rpx solid #eee;
 }
 
 .picker {
-	background: #fff;
-	padding: 20rpx;
-	border-radius: 10rpx;
-	font-size: 28rpx;
+	background: #f9f9f9;
+	padding: 25rpx;
+	border-radius: 12rpx;
+	font-size: 30rpx;
+	border: 1rpx solid #eee;
+	color: #333;
 }
 
 .note-input {
-	background: #fff;
-	padding: 20rpx;
-	border-radius: 10rpx;
-	font-size: 28rpx;
+	background: #f9f9f9;
+	padding: 25rpx;
+	border-radius: 12rpx;
+	font-size: 30rpx;
+	border: 1rpx solid #eee;
 }
 
 .submit-btn {
-	background: #4CAF50;
+	background: #3cc51f;
 	color: #fff;
-	margin-top: 40rpx;
+	margin-top: 50rpx;
+	font-size: 32rpx;
+	border-radius: 12rpx;
+	height: 90rpx;
+	line-height: 90rpx;
+	box-shadow: 0 6rpx 15rpx rgba(60, 197, 31, 0.2);
+	letter-spacing: 4rpx;
+	font-weight: 500;
 }
 </style> 

@@ -167,24 +167,27 @@ export default {
 
 <style>
 	.container {
-		padding: 20rpx;
+		padding: 30rpx;
+		background-color: #f5f7fa;
+		min-height: 100vh;
 	}
 
 	.balance-card {
 		background-color: #fff;
-		border-radius: 12rpx;
-		padding: 30rpx;
-		margin-bottom: 20rpx;
+		border-radius: 16rpx;
+		padding: 35rpx;
+		margin-bottom: 25rpx;
+		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 	}
 
 	.balance-title {
 		font-size: 28rpx;
-		color: #999;
+		color: #666;
 		margin-bottom: 20rpx;
 	}
 
 	.balance-amount {
-		font-size: 48rpx;
+		font-size: 52rpx;
 		font-weight: bold;
 		color: #333;
 		margin-bottom: 30rpx;
@@ -193,84 +196,104 @@ export default {
 	.balance-detail {
 		display: flex;
 		justify-content: space-between;
+		background-color: #f9f9f9;
+		border-radius: 12rpx;
+		padding: 20rpx;
+		margin: 10rpx 0 25rpx;
 	}
 
 	.balance-item {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		padding: 10rpx;
+		flex: 1;
 	}
 
 	.balance-item .label {
-		font-size: 24rpx;
-		color: #999;
+		font-size: 26rpx;
+		color: #666;
 		margin-bottom: 10rpx;
 	}
 
 	.balance-item .amount {
-		font-size: 32rpx;
+		font-size: 34rpx;
 		color: #333;
+		font-weight: 500;
 	}
 
 	.balance-edit {
 		text-align: right;
 		color: #3cc51f;
-		font-size: 24rpx;
-		margin-top: 20rpx;
+		font-size: 26rpx;
+		padding: 10rpx 20rpx;
+		display: inline-block;
+		margin-left: auto;
+		background-color: rgba(60, 197, 31, 0.1);
+		border-radius: 20rpx;
 	}
 
 	.statistics {
 		display: flex;
 		justify-content: space-between;
 		background-color: #fff;
-		border-radius: 12rpx;
+		border-radius: 16rpx;
 		padding: 30rpx;
-		margin-bottom: 20rpx;
+		margin-bottom: 25rpx;
+		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 	}
 
 	.stat-item {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		flex: 1;
+		padding: 10rpx;
 	}
 
 	.stat-label {
-		font-size: 24rpx;
-		color: #999;
-		margin-bottom: 10rpx;
+		font-size: 26rpx;
+		color: #666;
+		margin-bottom: 15rpx;
 	}
 
 	.stat-value {
-		font-size: 32rpx;
+		font-size: 36rpx;
 		font-weight: bold;
 	}
 
 	.income {
-		color: #4CAF50;
+		color: #3cc51f;
 	}
 
 	.expense {
-		color: #f44336;
+		color: #ff3b30;
 	}
 
 	.record-list {
 		background-color: #fff;
-		border-radius: 12rpx;
+		border-radius: 16rpx;
 		padding: 30rpx;
+		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 	}
 
 	.list-title {
-		font-size: 28rpx;
-		color: #999;
-		margin-bottom: 20rpx;
+		font-size: 30rpx;
+		font-weight: 500;
+		color: #333;
+		margin-bottom: 25rpx;
+		border-bottom: 1rpx solid #f0f0f0;
+		padding-bottom: 15rpx;
 	}
 
 	.record-item {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 20rpx;
-		border-bottom: 1rpx solid #eee;
+		padding: 25rpx 15rpx;
+		background-color: #fafafa;
+		margin-bottom: 15rpx;
+		border-radius: 12rpx;
 	}
 
 	.record-left {
@@ -279,8 +302,10 @@ export default {
 	}
 
 	.record-category {
-		font-size: 28rpx;
-		font-weight: bold;
+		font-size: 30rpx;
+		font-weight: 500;
+		color: #333;
+		margin-bottom: 8rpx;
 	}
 
 	.record-date {
@@ -288,49 +313,59 @@ export default {
 		color: #999;
 	}
 
+	.record-right {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+	}
+
 	.record-amount {
 		font-size: 32rpx;
-		font-weight: bold;
+		font-weight: 500;
 	}
 
 	.balance-edit-popup {
 		background-color: #fff;
-		border-radius: 12rpx;
-		padding: 30rpx;
+		border-radius: 16rpx;
+		padding: 40rpx 30rpx;
 		width: 600rpx;
+		box-shadow: 0 10rpx 25rpx rgba(0, 0, 0, 0.1);
 	}
 
 	.popup-title {
-		font-size: 32rpx;
+		font-size: 34rpx;
 		font-weight: bold;
 		text-align: center;
-		margin-bottom: 30rpx;
+		margin-bottom: 40rpx;
+		color: #333;
 	}
 
 	.form-item {
-		margin-bottom: 20rpx;
+		margin-bottom: 25rpx;
 	}
 
 	.form-item .label {
 		font-size: 28rpx;
 		color: #333;
-		margin-bottom: 10rpx;
+		margin-bottom: 15rpx;
 		display: block;
+		font-weight: 500;
 	}
 
 	.form-item input {
 		width: 100%;
 		height: 80rpx;
-		border: 1rpx solid #eee;
-		border-radius: 8rpx;
+		border: 1rpx solid #e0e0e0;
+		border-radius: 12rpx;
 		padding: 0 20rpx;
 		font-size: 28rpx;
+		background-color: #f9f9f9;
 	}
 
 	.popup-buttons {
 		display: flex;
 		justify-content: space-between;
-		margin-top: 30rpx;
+		margin-top: 40rpx;
 	}
 
 	.popup-buttons button {
@@ -338,17 +373,20 @@ export default {
 		height: 80rpx;
 		line-height: 80rpx;
 		text-align: center;
-		border-radius: 8rpx;
+		border-radius: 12rpx;
 		font-size: 28rpx;
+		transition: all 0.3s ease;
 	}
 
 	.cancel-btn {
 		background-color: #f5f5f5;
 		color: #666;
+		border: 1rpx solid #e0e0e0;
 	}
 
 	.confirm-btn {
 		background-color: #3cc51f;
 		color: #fff;
+		border: none;
 	}
 </style>

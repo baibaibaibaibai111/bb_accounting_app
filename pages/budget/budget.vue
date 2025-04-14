@@ -286,51 +286,61 @@ export default {
 
 <style>
 .container {
-	padding: 20rpx;
+	padding: 30rpx;
+	background-color: #f5f7fa;
+	min-height: 100vh;
 }
 
 .budget-card {
 	background-color: #fff;
-	border-radius: 12rpx;
+	border-radius: 16rpx;
 	padding: 30rpx;
-	margin-bottom: 20rpx;
+	margin-bottom: 30rpx;
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
 .budget-title {
 	font-size: 28rpx;
-	color: #999;
+	color: #666;
 	margin-bottom: 20rpx;
 }
 
 .budget-amount {
-	font-size: 48rpx;
+	font-size: 52rpx;
 	font-weight: bold;
 	color: #333;
-	margin-bottom: 10rpx;
+	margin-bottom: 15rpx;
 }
 
 .budget-used, .budget-remaining {
-	font-size: 24rpx;
+	font-size: 26rpx;
 	color: #666;
 	margin-bottom: 5rpx;
 }
 
+.budget-remaining {
+	color: #3cc51f;
+	font-weight: 500;
+}
+
 .category-list {
 	background-color: #fff;
-	border-radius: 12rpx;
+	border-radius: 16rpx;
 	padding: 30rpx;
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
 .list-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 20rpx;
+	margin-bottom: 25rpx;
 }
 
 .list-title {
-	font-size: 28rpx;
-	color: #999;
+	font-size: 30rpx;
+	color: #333;
+	font-weight: 500;
 }
 
 .actions {
@@ -340,28 +350,37 @@ export default {
 
 .add-category {
 	color: #3cc51f;
-	font-size: 24rpx;
-	margin-right: 20rpx;
+	font-size: 26rpx;
+	margin-right: 25rpx;
+	background-color: rgba(60, 197, 31, 0.1);
+	padding: 8rpx 16rpx;
+	border-radius: 20rpx;
 }
 
 .clear-all {
 	color: #ff3b30;
-	font-size: 24rpx;
+	font-size: 26rpx;
+	background-color: rgba(255, 59, 48, 0.1);
+	padding: 8rpx 16rpx;
+	border-radius: 20rpx;
 }
 
 .empty-tip {
 	text-align: center;
 	color: #999;
 	font-size: 28rpx;
-	padding: 40rpx 0;
+	padding: 60rpx 0;
 }
 
 .category-item {
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
-	padding: 20rpx;
-	border-bottom: 1rpx solid #eee;
+	padding: 25rpx 15rpx;
+	border-bottom: 1rpx solid #f0f0f0;
+	margin-bottom: 10rpx;
+	background-color: #fafafa;
+	border-radius: 12rpx;
 }
 
 .category-info {
@@ -371,14 +390,27 @@ export default {
 }
 
 .category-name {
-	font-size: 28rpx;
+	font-size: 30rpx;
 	font-weight: bold;
-	margin-bottom: 5rpx;
+	margin-bottom: 8rpx;
+	color: #333;
 }
 
-.category-amount, .category-used, .category-remaining {
-	font-size: 24rpx;
+.category-amount {
+	font-size: 26rpx;
 	color: #666;
+	margin-bottom: 8rpx;
+}
+
+.category-used {
+	font-size: 26rpx;
+	color: #ff9500;
+	margin-bottom: 8rpx;
+}
+
+.category-remaining {
+	font-size: 26rpx;
+	color: #3cc51f;
 	margin-bottom: 5rpx;
 }
 
@@ -389,55 +421,66 @@ export default {
 }
 
 .category-edit, .category-delete {
-	color: #3cc51f;
 	font-size: 24rpx;
 	margin-bottom: 10rpx;
+	padding: 6rpx 14rpx;
+	border-radius: 20rpx;
+}
+
+.category-edit {
+	color: #007aff;
+	background-color: rgba(0, 122, 255, 0.1);
 }
 
 .category-delete {
 	color: #ff3b30;
+	background-color: rgba(255, 59, 48, 0.1);
 }
 
 .budget-edit-popup {
 	background-color: #fff;
-	border-radius: 12rpx;
-	padding: 30rpx;
+	border-radius: 16rpx;
+	padding: 40rpx 30rpx;
 	width: 600rpx;
+	box-shadow: 0 10rpx 25rpx rgba(0, 0, 0, 0.1);
 }
 
 .popup-title {
-	font-size: 32rpx;
+	font-size: 34rpx;
 	font-weight: bold;
 	text-align: center;
-	margin-bottom: 30rpx;
+	margin-bottom: 40rpx;
+	color: #333;
 }
 
 .form-item {
-	margin-bottom: 20rpx;
+	margin-bottom: 25rpx;
 }
 
 .form-item .label {
 	font-size: 28rpx;
 	color: #333;
-	margin-bottom: 10rpx;
+	margin-bottom: 15rpx;
 	display: block;
+	font-weight: 500;
 }
 
 .form-item input, .picker, .picker-view {
 	width: 90%;
 	height: 80rpx;
-	border: 1rpx solid #eee;
-	border-radius: 8rpx;
+	border: 1rpx solid #e0e0e0;
+	border-radius: 12rpx;
 	padding: 0 20rpx;
 	font-size: 28rpx;
 	line-height: 80rpx;
+	background-color: #f9f9f9;
 }
 
 .picker-view {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	background-color: #f9f9f9;
+	background-color: #f5f5f5;
 }
 
 .picker-arrow {
@@ -448,7 +491,7 @@ export default {
 .popup-buttons {
 	display: flex;
 	justify-content: space-between;
-	margin-top: 30rpx;
+	margin-top: 40rpx;
 }
 
 .popup-buttons button {
@@ -456,26 +499,30 @@ export default {
 	height: 80rpx;
 	line-height: 80rpx;
 	text-align: center;
-	border-radius: 8rpx;
+	border-radius: 12rpx;
 	font-size: 28rpx;
+	transition: all 0.3s ease;
 }
 
 .cancel-btn {
 	background-color: #f5f5f5;
 	color: #666;
+	border: 1rpx solid #e0e0e0;
 }
 
 .confirm-btn {
 	background-color: #3cc51f;
 	color: #fff;
+	border: none;
 }
 
 .category-selector {
 	background-color: #fff;
-	border-radius: 12rpx;
+	border-radius: 16rpx;
 	padding: 30rpx;
 	width: 600rpx;
 	max-height: 80vh;
+	box-shadow: 0 10rpx 25rpx rgba(0, 0, 0, 0.1);
 }
 
 .selector-header {
@@ -488,18 +535,21 @@ export default {
 }
 
 .title {
-	font-size: 30rpx;
+	font-size: 32rpx;
 	font-weight: bold;
 	color: #333;
 }
 
 .close-btn {
-	color: #999;
+	color: #666;
 	font-size: 28rpx;
+	padding: 6rpx 14rpx;
+	border-radius: 20rpx;
+	background-color: #f5f5f5;
 }
 
 .category-scroll {
-	height: 400rpx;
+	height: 450rpx;
 	overflow-view: scroll;
 }
 
@@ -508,12 +558,14 @@ export default {
 	justify-content: space-between;
 	align-items: center;
 	padding: 24rpx 20rpx;
-	border-bottom: 1rpx solid #eee;
+	border-bottom: 1rpx solid #f0f0f0;
 	font-size: 28rpx;
+	border-radius: 8rpx;
+	margin-bottom: 10rpx;
 }
 
 .selector-item:active {
-	background-color: #f9f9f9;
+	background-color: #f0f0f0;
 }
 
 .selected-icon {

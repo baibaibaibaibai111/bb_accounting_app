@@ -172,17 +172,26 @@ export default {
 
 <style>
 .container {
-	padding: 20rpx;
+	padding: 30rpx;
+	background-color: #f5f7fa;
+	min-height: 100vh;
 }
 
 .category-section {
 	margin-bottom: 30rpx;
+	background-color: #fff;
+	border-radius: 16rpx;
+	padding: 30rpx;
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
 .section-title {
 	font-size: 32rpx;
 	font-weight: bold;
-	margin-bottom: 20rpx;
+	margin-bottom: 25rpx;
+	color: #333;
+	border-bottom: 1rpx solid #f0f0f0;
+	padding-bottom: 15rpx;
 }
 
 .category-list {
@@ -194,12 +203,16 @@ export default {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 20rpx;
-	border-bottom: 1rpx solid #eee;
+	padding: 25rpx 15rpx;
+	border-bottom: 1rpx solid #f0f0f0;
+	border-radius: 10rpx;
+	margin-bottom: 10rpx;
+	background-color: #fafafa;
 }
 
 .category-name {
-	font-size: 28rpx;
+	font-size: 30rpx;
+	color: #333;
 }
 
 .category-actions {
@@ -208,12 +221,19 @@ export default {
 
 .action-btn {
 	font-size: 24rpx;
-	color: #4CAF50;
 	margin-left: 20rpx;
+	padding: 8rpx 16rpx;
+	border-radius: 20rpx;
+}
+
+.action-btn {
+	color: #007aff;
+	background-color: rgba(0, 122, 255, 0.1);
 }
 
 .action-btn.delete {
-	color: #f44336;
+	color: #ff3b30;
+	background-color: rgba(255, 59, 48, 0.1);
 }
 
 .add-category {
@@ -221,22 +241,31 @@ export default {
 }
 
 .add-btn {
-	background: #4CAF50;
+	background: #3cc51f;
 	color: #fff;
+	font-size: 32rpx;
+	border-radius: 12rpx;
+	height: 90rpx;
+	line-height: 90rpx;
+	box-shadow: 0 6rpx 15rpx rgba(60, 197, 31, 0.2);
+	letter-spacing: 4rpx;
+	font-weight: 500;
 }
 
 .popup-content {
 	background: #fff;
-	border-radius: 20rpx;
-	padding: 30rpx;
+	border-radius: 16rpx;
+	padding: 40rpx 30rpx;
 	width: 600rpx;
+	box-shadow: 0 10rpx 25rpx rgba(0, 0, 0, 0.1);
 }
 
 .popup-title {
-	font-size: 32rpx;
+	font-size: 34rpx;
 	font-weight: bold;
 	text-align: center;
-	margin-bottom: 30rpx;
+	margin-bottom: 40rpx;
+	color: #333;
 }
 
 .popup-form {
@@ -244,58 +273,74 @@ export default {
 }
 
 .form-group {
-	margin-bottom: 20rpx;
+	margin-bottom: 25rpx;
 }
 
 .form-title {
 	font-size: 28rpx;
-	color: #666;
-	margin-bottom: 10rpx;
+	color: #333;
+	margin-bottom: 15rpx;
+	font-weight: 500;
 }
 
 .type-selector {
 	display: flex;
-	background: #f5f5f5;
-	border-radius: 10rpx;
+	background: #f9f9f9;
+	border-radius: 12rpx;
 	overflow: hidden;
+	border: 1rpx solid #eee;
+	margin-top: 10rpx;
 }
 
 .type-item {
 	flex: 1;
 	text-align: center;
-	padding: 20rpx;
-	font-size: 28rpx;
+	padding: 25rpx;
+	font-size: 30rpx;
+	color: #666;
+	transition: all 0.3s ease;
 }
 
 .type-item.active {
-	background: #4CAF50;
+	background: #3cc51f;
 	color: #fff;
+	font-weight: 500;
 }
 
 .category-input {
-	background: #f5f5f5;
-	padding: 20rpx;
-	border-radius: 10rpx;
-	font-size: 28rpx;
+	background: #f9f9f9;
+	padding: 25rpx;
+	border-radius: 12rpx;
+	font-size: 30rpx;
+	border: 1rpx solid #eee;
 }
 
 .popup-buttons {
 	display: flex;
 	justify-content: space-between;
+	margin-top: 40rpx;
 }
 
-.cancel-btn, .confirm-btn {
+.popup-buttons button {
 	flex: 1;
 	margin: 0 10rpx;
+	height: 80rpx;
+	line-height: 80rpx;
+	text-align: center;
+	border-radius: 12rpx;
+	font-size: 30rpx;
+	transition: all 0.3s ease;
 }
 
 .cancel-btn {
 	background: #f5f5f5;
 	color: #666;
+	border: 1rpx solid #e0e0e0;
 }
 
 .confirm-btn {
-	background: #4CAF50;
+	background: #3cc51f;
 	color: #fff;
+	border: none;
 }
 </style> 
