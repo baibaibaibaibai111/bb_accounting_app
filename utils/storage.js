@@ -2,7 +2,8 @@
 const STORAGE_KEYS = {
 	RECORDS: 'accounting_records',
 	CATEGORIES: 'accounting_categories',
-	BUDGET: 'accounting_budget'
+	BUDGET: 'accounting_budget',
+	BALANCE: 'accounting_balance'
 }
 
 // 获取记录列表
@@ -43,21 +44,53 @@ export function saveCategories(categories) {
 
 // 获取预算设置
 export function getBudget() {
-	const budget = uni.getStorageSync(STORAGE_KEYS.BUDGET)
-	return budget ? JSON.parse(budget) : {
-		monthly: 5000,
-		categories: {
-			'餐饮': 1000,
-			'交通': 500,
-			'购物': 2000,
-			'娱乐': 500
+	try {
+		const budgetStr = uni.getStorageSync(STORAGE_KEYS.BUDGET);
+		if (budgetStr) {
+			return JSON.parse(budgetStr);
 		}
+	} catch (e) {
+		console.error('获取预算失败', e);
 	}
+	// 返回默认预算结构
+	return {
+		total: 0,
+		categories: {}
+	};
 }
 
 // 保存预算
 export function saveBudget(budget) {
-	uni.setStorageSync(STORAGE_KEYS.BUDGET, JSON.stringify(budget))
+	try {
+		// 确保total是所有分类预算的总和
+		budget.total = Object.values(budget.categories).reduce((sum, amount) => sum + Number(amount), 0);
+		uni.setStorageSync(STORAGE_KEYS.BUDGET, JSON.stringify(budget));
+		return true;
+	} catch (e) {
+		console.error('保存预算失败', e);
+		return false;
+	}
+}
+
+// 获取余额设置
+export function getBalance() {
+	const balance = uni.getStorageSync(STORAGE_KEYS.BALANCE)
+	return balance ? JSON.parse(balance) : {
+		total: 0,
+		alipay: 0,
+		wechat: 0
+	}
+}
+
+// 保存余额设置
+export function saveBalance(balance) {
+	try {
+		uni.setStorageSync(STORAGE_KEYS.BALANCE, JSON.stringify(balance))
+		return true
+	} catch (e) {
+		console.error('保存余额失败：', e)
+		return false
+	}
 }
 
 // 计算月度收支统计

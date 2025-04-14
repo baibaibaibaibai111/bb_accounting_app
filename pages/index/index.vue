@@ -3,7 +3,18 @@
 		<!-- 余额卡片 -->
 		<view class="balance-card">
 			<view class="balance-title">当前余额</view>
-			<view class="balance-amount">¥{{balance}}</view>
+			<view class="balance-amount">¥{{balance.total}}</view>
+			<view class="balance-detail">
+				<view class="balance-item">
+					<text class="label">支付宝</text>
+					<text class="amount">¥{{balance.alipay}}</text>
+				</view>
+				<view class="balance-item">
+					<text class="label">微信</text>
+					<text class="amount">¥{{balance.wechat}}</text>
+				</view>
+			</view>
+			<view class="balance-edit" @click="showBalanceEdit">编辑余额</view>
 		</view>
 		
 		<!-- 收支统计 -->
@@ -37,16 +48,42 @@
 				</uni-swipe-action-item>
 			</uni-swipe-action>
 		</view>
+		
+		<uni-popup ref="balancePopup" type="center">
+			<view class="balance-edit-popup">
+				<view class="popup-title">编辑余额</view>
+				<view class="form-item">
+					<text class="label">支付宝余额</text>
+					<input type="number" v-model="editBalance.alipay" placeholder="请输入支付宝余额" />
+				</view>
+				<view class="form-item">
+					<text class="label">微信余额</text>
+					<input type="number" v-model="editBalance.wechat" placeholder="请输入微信余额" />
+				</view>
+				<view class="popup-buttons">
+					<button class="cancel-btn" @click="cancelEdit">取消</button>
+					<button class="confirm-btn" @click="saveBalance">保存</button>
+				</view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
-import { getRecords, saveRecords, calculateMonthlyStats } from '@/utils/storage.js'
+import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance } from '@/utils/storage.js'
 
 export default {
 	data() {
 		return {
-			balance: 0,
+			balance: {
+				total: 0,
+				alipay: 0,
+				wechat: 0
+			},
+			editBalance: {
+				alipay: 0,
+				wechat: 0
+			},
 			monthlyStats: {
 				income: 0,
 				expense: 0
@@ -62,15 +99,21 @@ export default {
 	},
 	methods: {
 		// 获取收支记录
-		getRecords() {
+		loadRecords() {
 			this.records = getRecords()
 			this.monthlyStats = calculateMonthlyStats()
-			this.calculateBalance()
+			this.loadBalance()
 		},
 		// 计算余额
-		calculateBalance() {
-			const initialBalance = 10000 // 初始余额
-			this.balance = initialBalance + this.monthlyStats.income - this.monthlyStats.expense
+		loadBalance() {
+			const balance = getBalance()
+			this.balance = balance
+			// 计算包含收支记录的总余额
+			const alipayBalance = Number(balance.alipay)
+			const wechatBalance = Number(balance.wechat)
+			const income = Number(this.monthlyStats.income)
+			const expense = Number(this.monthlyStats.expense)
+			this.balance.total = alipayBalance + wechatBalance + income - expense
 		},
 		deleteRecord(record, index) {
 			uni.showModal({
@@ -88,13 +131,36 @@ export default {
 					}
 				}
 			})
+		},
+		showBalanceEdit() {
+			this.editBalance = { ...this.balance }
+			this.$refs.balancePopup.open()
+		},
+		cancelEdit() {
+			this.$refs.balancePopup.close()
+		},
+		saveBalance() {
+			const success = saveBalance(this.editBalance)
+			if (success) {
+				this.loadBalance()
+				this.$refs.balancePopup.close()
+				uni.showToast({
+					title: '保存成功',
+					icon: 'success'
+				})
+			} else {
+				uni.showToast({
+					title: '保存失败',
+					icon: 'error'
+				})
+			}
 		}
 	},
 	onLoad() {
-		this.getRecords()
+		this.loadRecords()
 	},
 	onShow() {
-		this.getRecords()
+		this.loadRecords()
 	}
 }
 </script>
@@ -105,40 +171,73 @@ export default {
 	}
 
 	.balance-card {
-		background: linear-gradient(135deg, #4CAF50, #45a049);
+		background-color: #fff;
+		border-radius: 12rpx;
 		padding: 30rpx;
-		border-radius: 20rpx;
-		color: #fff;
 		margin-bottom: 20rpx;
 	}
 
 	.balance-title {
 		font-size: 28rpx;
-		margin-bottom: 10rpx;
+		color: #999;
+		margin-bottom: 20rpx;
 	}
 
 	.balance-amount {
 		font-size: 48rpx;
 		font-weight: bold;
+		color: #333;
+		margin-bottom: 30rpx;
+	}
+
+	.balance-detail {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.balance-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.balance-item .label {
+		font-size: 24rpx;
+		color: #999;
+		margin-bottom: 10rpx;
+	}
+
+	.balance-item .amount {
+		font-size: 32rpx;
+		color: #333;
+	}
+
+	.balance-edit {
+		text-align: right;
+		color: #3cc51f;
+		font-size: 24rpx;
+		margin-top: 20rpx;
 	}
 
 	.statistics {
 		display: flex;
 		justify-content: space-between;
+		background-color: #fff;
+		border-radius: 12rpx;
+		padding: 30rpx;
 		margin-bottom: 20rpx;
 	}
 
 	.stat-item {
-		background: #fff;
-		padding: 20rpx;
-		border-radius: 10rpx;
-		flex: 1;
-		margin: 0 10rpx;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.stat-label {
 		font-size: 24rpx;
-		color: #666;
+		color: #999;
+		margin-bottom: 10rpx;
 	}
 
 	.stat-value {
@@ -155,14 +254,14 @@ export default {
 	}
 
 	.record-list {
-		background: #fff;
-		border-radius: 10rpx;
-		padding: 20rpx;
+		background-color: #fff;
+		border-radius: 12rpx;
+		padding: 30rpx;
 	}
 
 	.list-title {
 		font-size: 28rpx;
-		font-weight: bold;
+		color: #999;
 		margin-bottom: 20rpx;
 	}
 
@@ -171,7 +270,6 @@ export default {
 		justify-content: space-between;
 		align-items: center;
 		padding: 20rpx;
-		background-color: #fff;
 		border-bottom: 1rpx solid #eee;
 	}
 
@@ -195,15 +293,62 @@ export default {
 		font-weight: bold;
 	}
 
-	.delete-btn {
-		width: 60rpx;
-		height: 60rpx;
+	.balance-edit-popup {
+		background-color: #fff;
+		border-radius: 12rpx;
+		padding: 30rpx;
+		width: 600rpx;
+	}
+
+	.popup-title {
+		font-size: 32rpx;
+		font-weight: bold;
+		text-align: center;
+		margin-bottom: 30rpx;
+	}
+
+	.form-item {
+		margin-bottom: 20rpx;
+	}
+
+	.form-item .label {
+		font-size: 28rpx;
+		color: #333;
+		margin-bottom: 10rpx;
+		display: block;
+	}
+
+	.form-item input {
+		width: 100%;
+		height: 80rpx;
+		border: 1rpx solid #eee;
+		border-radius: 8rpx;
+		padding: 0 20rpx;
+		font-size: 28rpx;
+	}
+
+	.popup-buttons {
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 50%;
-		background-color: #ff4d4f;
+		justify-content: space-between;
+		margin-top: 30rpx;
+	}
+
+	.popup-buttons button {
+		width: 45%;
+		height: 80rpx;
+		line-height: 80rpx;
+		text-align: center;
+		border-radius: 8rpx;
+		font-size: 28rpx;
+	}
+
+	.cancel-btn {
+		background-color: #f5f5f5;
+		color: #666;
+	}
+
+	.confirm-btn {
+		background-color: #3cc51f;
 		color: #fff;
-		font-size: 40rpx;
 	}
 </style>
