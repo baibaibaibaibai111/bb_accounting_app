@@ -21,23 +21,27 @@
 		<!-- 收支记录列表 -->
 		<view class="record-list">
 			<view class="list-title">收支记录</view>
-			<view class="record-item" v-for="(item, index) in records" :key="index">
-				<view class="record-left">
-					<text class="record-category">{{item.category}}</text>
-					<text class="record-date">{{item.date}}</text>
-				</view>
-				<view class="record-right">
-					<text :class="['record-amount', item.type === 'income' ? 'income' : 'expense']">
-						{{item.type === 'income' ? '+' : '-'}}¥{{item.amount}}
-					</text>
-				</view>
-			</view>
+			<uni-swipe-action>
+				<uni-swipe-action-item v-for="(item, index) in records" :key="index" :right-options="options" @click="deleteRecord(item, index)">
+					<view class="record-item">
+						<view class="record-left">
+							<text class="record-category">{{item.category}}</text>
+							<text class="record-date">{{item.date}}</text>
+						</view>
+						<view class="record-right">
+							<text :class="['record-amount', item.type === 'income' ? 'income' : 'expense']">
+								{{item.type === 'income' ? '+' : '-'}}¥{{item.amount}}
+							</text>
+						</view>
+					</view>
+				</uni-swipe-action-item>
+			</uni-swipe-action>
 		</view>
 	</view>
 </template>
 
 <script>
-import { getRecords, calculateMonthlyStats } from '@/utils/storage.js'
+import { getRecords, saveRecords, calculateMonthlyStats } from '@/utils/storage.js'
 
 export default {
 	data() {
@@ -47,7 +51,13 @@ export default {
 				income: 0,
 				expense: 0
 			},
-			records: []
+			records: [],
+			options: [{
+				text: '删除',
+				style: {
+					backgroundColor: '#ff4d4f'
+				}
+			}]
 		}
 	},
 	methods: {
@@ -61,6 +71,23 @@ export default {
 		calculateBalance() {
 			const initialBalance = 10000 // 初始余额
 			this.balance = initialBalance + this.monthlyStats.income - this.monthlyStats.expense
+		},
+		deleteRecord(record, index) {
+			uni.showModal({
+				title: '确认删除',
+				content: `确定要删除这条${record.type === 'income' ? '收入' : '支出'}记录吗？`,
+				success: (res) => {
+					if (res.confirm) {
+						this.records.splice(index, 1)
+						saveRecords(this.records)
+						this.monthlyStats = calculateMonthlyStats()
+						uni.showToast({
+							title: '删除成功',
+							icon: 'success'
+						})
+					}
+				}
+			})
 		}
 	},
 	onLoad() {
@@ -143,7 +170,8 @@ export default {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 20rpx 0;
+		padding: 20rpx;
+		background-color: #fff;
 		border-bottom: 1rpx solid #eee;
 	}
 
@@ -165,5 +193,17 @@ export default {
 	.record-amount {
 		font-size: 32rpx;
 		font-weight: bold;
+	}
+
+	.delete-btn {
+		width: 60rpx;
+		height: 60rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		background-color: #ff4d4f;
+		color: #fff;
+		font-size: 40rpx;
 	}
 </style>

@@ -7,15 +7,24 @@ const STORAGE_KEYS = {
 
 // 获取记录列表
 export function getRecords() {
-	const records = uni.getStorageSync(STORAGE_KEYS.RECORDS)
-	return records ? JSON.parse(records) : []
+	try {
+		const records = uni.getStorageSync(STORAGE_KEYS.RECORDS)
+		return records ? JSON.parse(records) : []
+	} catch (e) {
+		console.error('获取记录失败：', e)
+		return []
+	}
 }
 
 // 保存记录
-export function saveRecord(record) {
-	const records = getRecords()
-	records.unshift(record)
-	uni.setStorageSync(STORAGE_KEYS.RECORDS, JSON.stringify(records))
+export function saveRecords(records) {
+	try {
+		uni.setStorageSync(STORAGE_KEYS.RECORDS, JSON.stringify(records))
+		return true
+	} catch (e) {
+		console.error('保存记录失败：', e)
+		return false
+	}
 }
 
 // 获取分类列表
@@ -101,9 +110,12 @@ export function calculateCategoryBudgets() {
 		const recordDate = new Date(record.date)
 		if (recordDate.getMonth() === currentMonth && 
 			recordDate.getFullYear() === currentYear && 
-			record.type === 'expense' &&
 			categoryStats[record.category]) {
-			categoryStats[record.category].used += record.amount
+			if (record.type === 'expense') {
+				categoryStats[record.category].used += record.amount
+			} else if (record.type === 'income') {
+				categoryStats[record.category].used -= record.amount
+			}
 		}
 	})
 	
@@ -114,4 +126,20 @@ export function calculateCategoryBudgets() {
 		used: categoryStats[category].used,
 		percentage: Math.round((categoryStats[category].used / categoryStats[category].budget) * 100)
 	}))
+}
+
+// 清除所有数据
+export function clearAllData() {
+	try {
+		// 清除记录数据
+		uni.removeStorageSync(STORAGE_KEYS.RECORDS)
+		// 清除分类数据
+		uni.removeStorageSync(STORAGE_KEYS.CATEGORIES)
+		// 清除预算数据
+		uni.removeStorageSync(STORAGE_KEYS.BUDGET)
+		return true
+	} catch (e) {
+		console.error('清除数据失败：', e)
+		return false
+	}
 } 

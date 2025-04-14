@@ -5,15 +5,15 @@
 			<view class="type-selector">
 				<view 
 					class="type-item" 
-					:class="{ active: recordType === 'income' }"
-					@click="recordType = 'income'"
+					:class="{ active: type === 'income' }"
+					@click="type = 'income'"
 				>
 					收入
 				</view>
 				<view 
 					class="type-item" 
-					:class="{ active: recordType === 'expense' }"
-					@click="recordType = 'expense'"
+					:class="{ active: type === 'expense' }"
+					@click="type = 'expense'"
 				>
 					支出
 				</view>
@@ -71,12 +71,12 @@
 </template>
 
 <script>
-import { saveRecord, getCategories } from '@/utils/storage.js'
+import { getCategories, saveCategories, getRecords, saveRecords } from '@/utils/storage.js'
 
 export default {
 	data() {
 		return {
-			recordType: 'expense',
+			type: 'expense',
 			amount: '',
 			categoryIndex: 0,
 			categories: [],
@@ -96,39 +96,57 @@ export default {
 			this.date = e.detail.value
 		},
 		submitRecord() {
-			if (!this.amount) {
+			if (!this.amount || !this.categories[this.categoryIndex] || !this.date) {
 				uni.showToast({
-					title: '请输入金额',
+					title: '请填写完整信息',
 					icon: 'none'
 				})
 				return
 			}
 			
 			const record = {
-				type: this.recordType,
+				id: Date.now(),
+				type: this.type,
 				amount: parseFloat(this.amount),
 				category: this.categories[this.categoryIndex],
 				date: this.date,
 				note: this.note
 			}
 			
-			saveRecord(record)
-			uni.showToast({
-				title: '保存成功',
-				icon: 'success'
-			})
+			console.log('新记录：', record)
 			
-			// 重置表单
-			this.amount = ''
-			this.note = ''
+			const records = getRecords()
+			console.log('现有记录：', records)
+			
+			records.unshift(record)
+			console.log('更新后的记录：', records)
+			
+			const success = saveRecords(records)
+			console.log('保存结果：', success)
+			
+			if (success) {
+				uni.showToast({
+					title: '保存成功',
+					icon: 'success'
+				})
+				
+				setTimeout(() => {
+					uni.navigateBack()
+				}, 1500)
+			} else {
+				uni.showToast({
+					title: '保存失败',
+					icon: 'error'
+				})
+			}
 		},
 		loadCategories() {
 			const categories = getCategories()
-			this.categories = this.recordType === 'income' ? categories.income : categories.expense
+			this.categories = this.type === 'income' ? categories.income : categories.expense
 		}
 	},
 	watch: {
-		recordType() {
+		type() {
 			this.loadCategories()
 			this.categoryIndex = 0
 		}
