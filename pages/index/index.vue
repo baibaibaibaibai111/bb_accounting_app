@@ -7,38 +7,48 @@
 				:class="{ active: currentTab === 'list' }"
 				@click="currentTab = 'list'"
 			>
-				收支视图
+				<text class="tab-text">收支视图</text>
+				<view class="tab-indicator" v-if="currentTab === 'list'"></view>
 			</view>
 			<view 
 				class="tab-item" 
 				:class="{ active: currentTab === 'calendar' }"
 				@click="currentTab = 'calendar'"
 			>
-				日历视图
+				<text class="tab-text">日历视图</text>
+				<view class="tab-indicator" v-if="currentTab === 'calendar'"></view>
 			</view>
 		</view>
 		
 		<!-- 收支视图 -->
-		<view v-if="currentTab === 'list'">
+		<view v-if="currentTab === 'list'" class="content-container">
 			<!-- 余额卡片 -->
 			<view class="balance-card">
-				<view class="balance-title">当前余额</view>
+				<view class="balance-header">
+					<text class="balance-title">当前余额</text>
+					<text class="balance-edit" @click="showBalanceEdit">编辑</text>
+				</view>
 				<view class="balance-amount">¥{{balance.total}}</view>
 				<view class="balance-detail">
 					<view class="balance-item">
-						<text class="label">支付宝</text>
-						<text class="amount">¥{{balance.alipay}}</text>
+						<view class="balance-icon alipay">支</view>
+						<view class="balance-info">
+							<text class="balance-label">支付宝</text>
+							<text class="balance-value">¥{{balance.alipay}}</text>
+						</view>
 					</view>
 					<view class="balance-item">
-						<text class="label">微信</text>
-						<text class="amount">¥{{balance.wechat}}</text>
+						<view class="balance-icon wechat">微</view>
+						<view class="balance-info">
+							<text class="balance-label">微信</text>
+							<text class="balance-value">¥{{balance.wechat}}</text>
+						</view>
 					</view>
 				</view>
-				<view class="balance-edit" @click="showBalanceEdit">编辑余额</view>
 			</view>
 			
 			<!-- 收支统计 -->
-			<view class="statistics">
+			<view class="statistics-card">
 				<view class="stat-item">
 					<text class="stat-label">本月收入</text>
 					<text class="stat-value income">+¥{{monthlyStats.income}}</text>
@@ -57,32 +67,35 @@
 		</view>
 		
 		<!-- 日历视图 -->
-		<view v-else class="calendar-container">
-			<view class="calendar-header">
-				<view class="calendar-title">
-					<text class="month-switch" @click="prevMonth">◀</text>
-					{{currentYear}}年{{currentMonth + 1}}月
-					<text class="month-switch" @click="nextMonth">▶</text>
+		<view v-else class="content-container">
+			<view class="calendar-card">
+				<view class="calendar-header">
+					<view class="calendar-title">
+						<text class="month-switch" @click="prevMonth">◀</text>
+						{{currentYear}}年{{currentMonth + 1}}月
+						<text class="month-switch" @click="nextMonth">▶</text>
+					</view>
+					<view class="calendar-weekdays">
+						<view class="weekday" v-for="day in weekdays" :key="day">{{day}}</view>
+					</view>
 				</view>
-				<view class="calendar-weekdays">
-					<view class="weekday" v-for="day in weekdays" :key="day">{{day}}</view>
-				</view>
-			</view>
-			<view class="calendar-body">
-				<view 
-					class="calendar-day" 
-					v-for="(day, index) in calendarDays" 
-					:key="index"
-					:class="{
-						'other-month': !day.isCurrentMonth,
-						'has-record': day.hasRecord
-					}"
-					@click="showDayRecords(day)"
-				>
-					<text class="day-number">{{day.day}}</text>
-					<view class="day-amount" v-if="day.hasRecord">
-						<text class="income" v-if="day.income > 0">+{{day.income}}</text>
-						<text class="expense" v-if="day.expense > 0">-{{day.expense}}</text>
+				<view class="calendar-body">
+					<view 
+						class="calendar-day" 
+						v-for="(day, index) in calendarDays" 
+						:key="index"
+						:class="{
+							'other-month': !day.isCurrentMonth,
+							'has-record': day.hasRecord,
+							'today': isToday(day)
+						}"
+						@click="showDayRecords(day)"
+					>
+						<text class="day-number">{{day.day}}</text>
+						<view class="day-amount" v-if="day.hasRecord">
+							<text class="income" v-if="day.income > 0">+{{day.income}}</text>
+							<text class="expense" v-if="day.expense > 0">-{{day.expense}}</text>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -90,15 +103,18 @@
 		
 		<!-- 收支记录列表 -->
 		<view class="record-list">
-			<view class="list-title">收支记录</view>
+			<view class="list-header">
+				<text class="list-title">收支记录</text>
+				<text class="list-count">共 {{totalRecords}} 条</text>
+			</view>
 			<uni-swipe-action>
 				<view v-for="(group, date) in groupedRecords" :key="date" class="date-group">
 					<view class="date-title">{{date}}</view>
 					<uni-swipe-action-item v-for="(item, index) in group" :key="index" :right-options="options" @click="deleteRecord(item, index)">
 						<view class="record-item">
 							<view class="record-left">
-								<text class="record-category">{{item.category}}</text>
-								<text class="record-time">{{item.date.split(' ')[1]}}</text>
+								<view class="record-category">{{item.category}}</view>
+								<view class="record-time">{{item.date.split(' ')[1]}}</view>
 							</view>
 							<view class="record-right">
 								<text :class="['record-amount', item.type === 'income' ? 'income' : 'expense']">
@@ -114,18 +130,23 @@
 		<!-- 编辑余额弹窗 -->
 		<uni-popup ref="balancePopup" type="center">
 			<view class="balance-edit-popup">
-				<view class="popup-title">编辑余额</view>
-				<view class="form-item">
-					<text class="label">支付宝余额</text>
-					<input type="number" v-model="editBalance.alipay" placeholder="请输入支付宝余额" />
+				<view class="popup-header">
+					<text class="popup-title">编辑余额</text>
+					<text class="popup-close" @click="cancelEdit">×</text>
 				</view>
-				<view class="form-item">
-					<text class="label">微信余额</text>
-					<input type="number" v-model="editBalance.wechat" placeholder="请输入微信余额" />
+				<view class="popup-content">
+					<view class="form-item">
+						<text class="label">支付宝余额</text>
+						<input type="number" v-model="editBalance.alipay" placeholder="请输入支付宝余额" class="input" />
+					</view>
+					<view class="form-item">
+						<text class="label">微信余额</text>
+						<input type="number" v-model="editBalance.wechat" placeholder="请输入微信余额" class="input" />
+					</view>
 				</view>
-				<view class="popup-buttons">
-					<button class="cancel-btn" @click="cancelEdit">取消</button>
-					<button class="confirm-btn" @click="saveBalance">保存</button>
+				<view class="popup-footer">
+					<button class="btn cancel-btn" @click="cancelEdit">取消</button>
+					<button class="btn confirm-btn" @click="saveBalance">保存</button>
 				</view>
 			</view>
 		</uni-popup>
@@ -159,6 +180,7 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 			},
 			records: [],
 			groupedRecords: {},
+			totalRecords: 0,
 			options: [{
 				text: '删除',
 				style: {
@@ -181,6 +203,9 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 				}
 				this.groupedRecords[date].push(record)
 			})
+			
+			// 计算总记录数
+			this.totalRecords = this.records.length
 			
 			console.log('分组后的记录：', this.groupedRecords)
 			
@@ -205,6 +230,9 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 			
 			// 计算本月结余
 			this.monthlyStats.balance = this.monthlyStats.income - this.monthlyStats.expense
+			
+			// 生成日历数据
+			this.generateCalendar()
 		},
 		loadBalance() {
 			const balance = getBalance()
@@ -256,6 +284,14 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 				})
 			}
 		},
+		// 判断是否是今天
+		isToday(day) {
+			if (!day.isCurrentMonth) return false
+			const today = new Date()
+			return today.getFullYear() === this.currentYear && 
+				   today.getMonth() === this.currentMonth && 
+				   today.getDate() === day.day
+		},
 		// 生成日历数据
 		generateCalendar() {
 			const days = []
@@ -284,8 +320,8 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 					day: i,
 					isCurrentMonth: true,
 					hasRecord: dayRecords.length > 0,
-					income: dayRecords.filter(r => r.type === 'income').reduce((sum, r) => sum + r.amount, 0),
-					expense: dayRecords.filter(r => r.type === 'expense').reduce((sum, r) => sum + r.amount, 0)
+					income: dayRecords.filter(r => r.type === 'income').reduce((sum, r) => sum + Number(r.amount), 0),
+					expense: dayRecords.filter(r => r.type === 'expense').reduce((sum, r) => sum + Number(r.amount), 0)
 				})
 			}
 			
@@ -348,382 +384,373 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 	onLoad() {
 		this.loadBalance()
 		this.loadRecords()
-		this.generateCalendar()
 	},
 	onShow() {
 		this.loadBalance()
 		this.loadRecords()
-		this.generateCalendar()
-		}
+	}
 	}
 </script>
 
 <style>
-	.container {
-		padding: 30rpx;
-		background-color: #f5f7fa;
-		min-height: 100vh;
-	}
+.container {
+	padding: 30rpx;
+	background-color: var(--card-bg);
+	min-height: 100vh;
+}
 
-	.tab-container {
-		display: flex;
-		background-color: #fff;
-		border-radius: 16rpx;
-		padding: 20rpx;
-		margin-bottom: 25rpx;
-		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
-	}
+/* Tab 样式 */
+.tab-container {
+	display: flex;
+	background-color: var(--card-bg);
+	border-radius: 16rpx;
+	padding: 20rpx;
+	margin-bottom: 25rpx;
+	box-shadow: var(--shadow-sm);
+}
 
-	.tab-item {
-		flex: 1;
-		text-align: center;
-		padding: 20rpx;
-		font-size: 30rpx;
-		color: #666;
-		position: relative;
-	}
+.tab-item {
+	flex: 1;
+	text-align: center;
+	padding: 20rpx;
+	position: relative;
+}
 
-	.tab-item.active {
-		color: #3cc51f;
-		font-weight: 500;
-	}
+.tab-text {
+	font-size: 30rpx;
+	color: var(--text-secondary);
+	transition: all 0.3s;
+}
 
-	.tab-item.active::after {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 40rpx;
-		height: 4rpx;
-		background-color: #3cc51f;
-		border-radius: 2rpx;
-	}
+.tab-item.active .tab-text {
+	color: var(--primary-color);
+	font-weight: 500;
+}
 
-	.calendar-container {
-		background-color: #fff;
-		border-radius: 16rpx;
-		padding: 30rpx;
-		margin-bottom: 25rpx;
-		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
-	}
+.tab-indicator {
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 40rpx;
+	height: 4rpx;
+	background-color: var(--primary-color);
+	border-radius: 2rpx;
+	transition: all 0.3s;
+}
 
-	.calendar-header {
-		margin-bottom: 20rpx;
-	}
+/* 余额卡片样式 */
+.balance-card {
+	background: linear-gradient(135deg, var(--primary-color), #6b8eff);
+	border-radius: 16rpx;
+	padding: 30rpx;
+	margin-bottom: 25rpx;
+	box-shadow: var(--shadow-md);
+	color: #ffffff;
+}
 
-	.calendar-title {
-		font-size: 32rpx;
-		font-weight: bold;
-		color: #333;
-		text-align: center;
-		margin-bottom: 20rpx;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
+.balance-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20rpx;
+}
 
-	.month-switch {
-		font-size: 28rpx;
-		color: #666;
-		margin: 0 30rpx;
-		padding: 10rpx;
-	}
+.balance-title {
+	font-size: 28rpx;
+	opacity: 0.9;
+}
 
-	.month-switch:active {
-		opacity: 0.7;
-	}
+.balance-edit {
+	font-size: 24rpx;
+	opacity: 0.8;
+	padding: 8rpx 16rpx;
+	background-color: rgba(255, 255, 255, 0.2);
+	border-radius: 20rpx;
+}
 
-	.calendar-weekdays {
-		display: flex;
-		justify-content: space-between;
-		margin-bottom: 15rpx;
-	}
+.balance-amount {
+	font-size: 48rpx;
+	font-weight: 600;
+	margin-bottom: 30rpx;
+}
 
-	.weekday {
-		width: 14.28%;
-		text-align: center;
-		font-size: 26rpx;
-		color: #666;
-	}
+.balance-detail {
+	display: flex;
+	justify-content: space-between;
+}
 
-	.calendar-body {
-		display: flex;
-		flex-wrap: wrap;
-	}
+.balance-item {
+	display: flex;
+	align-items: center;
+}
 
-	.calendar-day {
-		width: 14.28%;
-		height: 100rpx;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		position: relative;
-	}
+.balance-icon {
+	width: 60rpx;
+	height: 60rpx;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 24rpx;
+	margin-right: 15rpx;
+}
 
-	.calendar-day.other-month {
-		opacity: 0.3;
-	}
+.balance-icon.alipay {
+	background-color: rgba(255, 255, 255, 0.2);
+}
 
-	.calendar-day.has-record {
-		background-color: rgba(60, 197, 31, 0.1);
-		border-radius: 8rpx;
-	}
+.balance-icon.wechat {
+	background-color: rgba(255, 255, 255, 0.2);
+}
 
-	.day-number {
-		font-size: 28rpx;
-		color: #333;
-		margin-bottom: 4rpx;
-	}
+.balance-info {
+	display: flex;
+	flex-direction: column;
+}
 
-	.day-amount {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		font-size: 20rpx;
-	}
+.balance-label {
+	font-size: 24rpx;
+	opacity: 0.8;
+}
 
-	.day-amount .income {
-		color: #3cc51f;
-	}
+.balance-value {
+	font-size: 28rpx;
+	font-weight: 500;
+}
 
-	.day-amount .expense {
-		color: #ff3b30;
-	}
+/* 统计卡片样式 */
+.statistics-card {
+	display: flex;
+	justify-content: space-between;
+	background-color: var(--card-bg);
+	border-radius: 16rpx;
+	padding: 30rpx;
+	margin-bottom: 25rpx;
+	box-shadow: var(--shadow-sm);
+}
 
-	.balance-card {
-		background-color: #fff;
-		border-radius: 16rpx;
-		padding: 35rpx;
-		margin-bottom: 25rpx;
-		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
-	}
+.stat-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
 
-	.balance-title {
-		font-size: 28rpx;
-		color: #666;
-		margin-bottom: 20rpx;
-	}
+.stat-label {
+	font-size: 24rpx;
+	color: var(--text-secondary);
+	margin-bottom: 10rpx;
+}
 
-	.balance-amount {
-		font-size: 52rpx;
-		font-weight: bold;
-		color: #333;
-		margin-bottom: 30rpx;
-	}
+.stat-value {
+	font-size: 32rpx;
+	font-weight: 600;
+}
 
-	.balance-detail {
-		display: flex;
-		justify-content: space-between;
-		background-color: #f9f9f9;
-		border-radius: 12rpx;
-		padding: 20rpx;
-		margin: 10rpx 0 25rpx;
-	}
+/* 日历样式 */
+.calendar-card {
+	background-color: var(--card-bg);
+	border-radius: 16rpx;
+	padding: 30rpx;
+	margin-bottom: 25rpx;
+	box-shadow: var(--shadow-sm);
+}
 
-	.balance-item {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding: 10rpx;
-		flex: 1;
-	}
+.calendar-header {
+	margin-bottom: 20rpx;
+}
 
-	.balance-item .label {
-		font-size: 26rpx;
-		color: #666;
-		margin-bottom: 10rpx;
-	}
+.calendar-title {
+	font-size: 32rpx;
+	font-weight: 600;
+	color: var(--text-primary);
+	text-align: center;
+	margin-bottom: 20rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
 
-	.balance-item .amount {
-		font-size: 34rpx;
-		color: #333;
-		font-weight: 500;
-	}
+.month-switch {
+	font-size: 28rpx;
+	color: var(--text-secondary);
+	margin: 0 30rpx;
+	padding: 10rpx;
+}
 
-	.balance-edit {
-		text-align: right;
-		color: #3cc51f;
-		font-size: 26rpx;
-		padding: 10rpx 20rpx;
-		display: inline-block;
-		margin-left: auto;
-		background-color: rgba(60, 197, 31, 0.1);
-		border-radius: 20rpx;
-	}
+.calendar-weekdays {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 15rpx;
+}
 
-	.statistics {
-		display: flex;
-		justify-content: space-between;
-		background-color: #fff;
-		border-radius: 16rpx;
-		padding: 30rpx;
-		margin-bottom: 25rpx;
-		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
-	}
+.weekday {
+	width: 14.28%;
+	text-align: center;
+	font-size: 26rpx;
+	color: var(--text-secondary);
+}
 
-	.stat-item {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		flex: 1;
-		padding: 10rpx;
-	}
+.calendar-body {
+	display: flex;
+	flex-wrap: wrap;
+}
 
-	.stat-label {
-		font-size: 26rpx;
-		color: #666;
-		margin-bottom: 15rpx;
-	}
+.calendar-day {
+	width: 14.28%;
+	height: 100rpx;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
 
-	.stat-value {
-		font-size: 36rpx;
-		font-weight: bold;
-	}
+.calendar-day.other-month {
+	opacity: 0.3;
+}
 
-	.income {
-		color: #3cc51f;
-	}
+.calendar-day.has-record {
+	background-color: var(--primary-light);
+	border-radius: 8rpx;
+}
 
-	.expense {
-		color: #ff3b30;
-	}
+.calendar-day.today {
+	background-color: var(--primary-color);
+	border-radius: 8rpx;
+}
 
-	.record-list {
-		background-color: #fff;
-		border-radius: 16rpx;
-		padding: 30rpx;
-		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
-	}
+.calendar-day.today .day-number {
+	color: #ffffff;
+}
 
-	.list-title {
-		font-size: 30rpx;
-		font-weight: 500;
-		color: #333;
-		margin-bottom: 25rpx;
-		border-bottom: 1rpx solid #f0f0f0;
-		padding-bottom: 15rpx;
-	}
+.day-number {
+	font-size: 28rpx;
+	color: var(--text-primary);
+	margin-bottom: 4rpx;
+}
 
-	.record-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 25rpx 15rpx;
-		background-color: #fafafa;
-		margin-bottom: 15rpx;
-		border-radius: 12rpx;
-	}
+.day-amount {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	font-size: 20rpx;
+}
 
-	.record-left {
-		display: flex;
-		flex-direction: column;
-	}
+/* 记录列表样式 */
+.record-list {
+	background-color: var(--card-bg);
+	border-radius: 16rpx;
+	padding: 30rpx;
+	box-shadow: var(--shadow-sm);
+}
 
-	.record-category {
-		font-size: 30rpx;
-		font-weight: 500;
-		color: #333;
-		margin-bottom: 8rpx;
-	}
+.list-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20rpx;
+}
 
-	.record-time {
-		font-size: 24rpx;
-		color: #999;
-		margin-top: 4rpx;
-	}
+.list-title {
+	font-size: 32rpx;
+	font-weight: 600;
+	color: var(--text-primary);
+}
 
-	.record-right {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-	}
+.list-count {
+	font-size: 24rpx;
+	color: var(--text-secondary);
+}
 
-	.record-amount {
-		font-size: 32rpx;
-		font-weight: 500;
-	}
+.date-group {
+	margin-bottom: 20rpx;
+}
 
-	.balance-edit-popup {
-		background-color: #fff;
-		border-radius: 16rpx;
-		padding: 40rpx 30rpx;
-		width: 600rpx;
-		box-shadow: 0 10rpx 25rpx rgba(0, 0, 0, 0.1);
-	}
+.date-title {
+	font-size: 26rpx;
+	color: var(--text-secondary);
+	margin-bottom: 15rpx;
+	padding-left: 20rpx;
+	border-left: 4rpx solid var(--primary-color);
+}
 
-	.popup-title {
-		font-size: 34rpx;
-		font-weight: bold;
-		text-align: center;
-		margin-bottom: 40rpx;
-		color: #333;
-	}
+.record-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20rpx;
+	background-color: #ffffff;
+	border-radius: 12rpx;
+	margin-bottom: 15rpx;
+	box-shadow: var(--shadow-sm);
+}
 
-	.form-item {
-		margin-bottom: 25rpx;
-	}
+.record-left {
+	display: flex;
+	flex-direction: column;
+}
 
-	.form-item .label {
-		font-size: 28rpx;
-		color: #333;
-		margin-bottom: 15rpx;
-		display: block;
-		font-weight: 500;
-	}
+.record-category {
+	font-size: 28rpx;
+	color: var(--text-primary);
+	margin-bottom: 5rpx;
+}
 
-	.form-item input {
-		width: 100%;
-		height: 80rpx;
-		border: 1rpx solid #e0e0e0;
-		border-radius: 12rpx;
-		padding: 0 20rpx;
-		font-size: 28rpx;
-		background-color: #f9f9f9;
-		box-sizing: border-box;
-	}
+.record-time {
+	font-size: 24rpx;
+	color: var(--text-secondary);
+}
 
-	.popup-buttons {
-		display: flex;
-		justify-content: space-between;
-		margin-top: 40rpx;
-	}
+.record-amount {
+	font-size: 32rpx;
+	font-weight: 600;
+}
 
-	.popup-buttons button {
-		width: 45%;
-		height: 80rpx;
-		line-height: 80rpx;
-		text-align: center;
-		border-radius: 12rpx;
-		font-size: 28rpx;
-		transition: all 0.3s ease;
-	}
+/* 弹窗样式 */
+.balance-edit-popup {
+	background-color: var(--card-bg);
+	border-radius: 16rpx;
+	width: 600rpx;
+	padding: 30rpx;
+}
 
-	.cancel-btn {
-		background-color: #f5f5f5;
-		color: #666;
-		border: 1rpx solid #e0e0e0;
-	}
+.popup-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 30rpx;
+}
 
-	.confirm-btn {
-		background-color: #3cc51f;
-		color: #fff;
-		border: none;
-	}
+.popup-title {
+	font-size: 32rpx;
+	font-weight: 600;
+	color: var(--text-primary);
+}
 
-	.date-group {
-		margin-bottom: 20rpx;
-		background-color: #fff;
-		border-radius: 16rpx;
-		overflow: hidden;
-	}
+.popup-close {
+	font-size: 40rpx;
+	color: var(--text-secondary);
+	padding: 10rpx;
+}
 
-	.date-title {
-		padding: 20rpx 30rpx;
-		font-size: 28rpx;
-		color: #666;
-		background-color: #f9f9f9;
-		border-bottom: 1rpx solid #f0f0f0;
-	}
+.popup-content {
+	margin-bottom: 30rpx;
+}
+
+.popup-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 20rpx;
+}
+
+.cancel-btn {
+	background-color: var(--border-color);
+	color: var(--text-secondary);
+}
+
+.confirm-btn {
+	background-color: var(--primary-color);
+	color: #ffffff;
+}
 </style>
