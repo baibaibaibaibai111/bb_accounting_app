@@ -27,6 +27,12 @@
 				<text class="stat-label">本月支出</text>
 				<text class="stat-value expense">-¥{{monthlyStats.expense}}</text>
 			</view>
+			<view class="stat-item">
+				<text class="stat-label">本月结余</text>
+				<text class="stat-value" :class="monthlyStats.balance >= 0 ? 'income' : 'expense'">
+					{{monthlyStats.balance >= 0 ? '+' : ''}}¥{{monthlyStats.balance}}
+				</text>
+			</view>
 		</view>
 		
 		<!-- 收支记录列表 -->
@@ -89,7 +95,8 @@ export default {
 			},
 			monthlyStats: {
 				income: 0,
-				expense: 0
+				expense: 0,
+				balance: 0
 			},
 			records: [],
 			groupedRecords: {},
@@ -117,6 +124,9 @@ export default {
 			})
 			
 			console.log('分组后的记录：', this.groupedRecords)
+			
+			// 计算本月结余
+			this.monthlyStats.balance = this.monthlyStats.income - this.monthlyStats.expense
 		},
 		loadBalance() {
 			const balance = getBalance()
@@ -378,6 +388,7 @@ export default {
 		padding: 0 20rpx;
 		font-size: 28rpx;
 		background-color: #f9f9f9;
+		box-sizing: border-box;
 	}
 
 	.popup-buttons {

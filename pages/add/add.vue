@@ -56,16 +56,6 @@
 			</picker>
 		</view>
 		
-		<view class="form-group">
-			<view class="form-title">备注</view>
-			<input 
-				type="text" 
-				v-model="note" 
-				placeholder="请输入备注"
-				class="note-input"
-			/>
-		</view>
-		
 		<button class="submit-btn" @click="submitRecord">保存</button>
 	</view>
 </template>
@@ -80,8 +70,7 @@ export default {
 			amount: '',
 			categoryIndex: 0,
 			categories: [],
-			date: this.getCurrentDate(),
-			note: ''
+			date: this.getCurrentDate()
 		}
 	},
 	methods: {
@@ -109,8 +98,7 @@ export default {
 				type: this.type,
 				amount: parseFloat(this.amount),
 				category: this.categories[this.categoryIndex],
-				date: this.date,
-				note: this.note
+				date: this.date
 			}
 			
 			console.log('新记录：', record)
@@ -165,10 +153,10 @@ export default {
 }
 
 .form-group {
-	margin-bottom: 35rpx;
+	margin-bottom: 25rpx;
 	background-color: #fff;
 	border-radius: 16rpx;
-	padding: 25rpx;
+	padding: 30rpx;
 	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
@@ -184,8 +172,8 @@ export default {
 	background: #f9f9f9;
 	border-radius: 12rpx;
 	overflow: hidden;
-	margin-top: 15rpx;
 	border: 1rpx solid #eee;
+	margin-top: 10rpx;
 }
 
 .type-item {
@@ -203,24 +191,7 @@ export default {
 	font-weight: 500;
 }
 
-.amount-input {
-	background: #f9f9f9;
-	padding: 25rpx;
-	border-radius: 12rpx;
-	font-size: 36rpx;
-	border: 1rpx solid #eee;
-}
-
-.picker {
-	background: #f9f9f9;
-	padding: 25rpx;
-	border-radius: 12rpx;
-	font-size: 30rpx;
-	border: 1rpx solid #eee;
-	color: #333;
-}
-
-.note-input {
+.amount-input, .picker {
 	background: #f9f9f9;
 	padding: 25rpx;
 	border-radius: 12rpx;
@@ -231,11 +202,11 @@ export default {
 .submit-btn {
 	background: #3cc51f;
 	color: #fff;
-	margin-top: 50rpx;
 	font-size: 32rpx;
 	border-radius: 12rpx;
 	height: 90rpx;
 	line-height: 90rpx;
+	margin-top: 40rpx;
 	box-shadow: 0 6rpx 15rpx rgba(60, 197, 31, 0.2);
 	letter-spacing: 4rpx;
 	font-weight: 500;
