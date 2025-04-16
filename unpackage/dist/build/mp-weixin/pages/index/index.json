@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "首页",
+  "usingComponents": {
+    "uni-swipe-action-item": "../../node-modules/@dcloudio/uni-ui/lib/uni-swipe-action-item/uni-swipe-action-item",
+    "uni-swipe-action": "../../node-modules/@dcloudio/uni-ui/lib/uni-swipe-action/uni-swipe-action",
+    "uni-popup": "../../node-modules/@dcloudio/uni-ui/lib/uni-popup/uni-popup"
+  }
+}

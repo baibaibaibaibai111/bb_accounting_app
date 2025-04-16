@@ -395,18 +395,18 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 <style>
 .container {
 	padding: 30rpx;
-	background-color: var(--card-bg);
 	min-height: 100vh;
+	background-color: #F8F8F8;
 }
 
 /* Tab 样式 */
 .tab-container {
 	display: flex;
-	background-color: var(--card-bg);
+	background-color: #ffffff;
 	border-radius: 16rpx;
 	padding: 20rpx;
 	margin-bottom: 25rpx;
-	box-shadow: var(--shadow-sm);
+	box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.05);
 }
 
 .tab-item {
@@ -418,12 +418,12 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 
 .tab-text {
 	font-size: 30rpx;
-	color: var(--text-secondary);
+	color: #666666;
 	transition: all 0.3s;
 }
 
 .tab-item.active .tab-text {
-	color: var(--primary-color);
+	color: #3cc51f;
 	font-weight: 500;
 }
 
@@ -434,18 +434,17 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 	transform: translateX(-50%);
 	width: 40rpx;
 	height: 4rpx;
-	background-color: var(--primary-color);
+	background-color: #3cc51f;
 	border-radius: 2rpx;
-	transition: all 0.3s;
 }
 
 /* 余额卡片样式 */
 .balance-card {
-	background: linear-gradient(135deg, var(--primary-color), #6b8eff);
+	background: linear-gradient(135deg, #3cc51f, #44d81d);
 	border-radius: 16rpx;
 	padding: 30rpx;
 	margin-bottom: 25rpx;
-	box-shadow: var(--shadow-md);
+	box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
 	color: #ffffff;
 }
 
@@ -494,13 +493,6 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 	justify-content: center;
 	font-size: 24rpx;
 	margin-right: 15rpx;
-}
-
-.balance-icon.alipay {
-	background-color: rgba(255, 255, 255, 0.2);
-}
-
-.balance-icon.wechat {
 	background-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -523,11 +515,11 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 .statistics-card {
 	display: flex;
 	justify-content: space-between;
-	background-color: var(--card-bg);
+	background-color: #ffffff;
 	border-radius: 16rpx;
 	padding: 30rpx;
 	margin-bottom: 25rpx;
-	box-shadow: var(--shadow-sm);
+	box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.05);
 }
 
 .stat-item {
@@ -538,7 +530,7 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 
 .stat-label {
 	font-size: 24rpx;
-	color: var(--text-secondary);
+	color: #666666;
 	margin-bottom: 10rpx;
 }
 
@@ -547,13 +539,21 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 	font-weight: 600;
 }
 
+.stat-value.income {
+	color: #3cc51f;
+}
+
+.stat-value.expense {
+	color: #ff3b30;
+}
+
 /* 日历样式 */
 .calendar-card {
-	background-color: var(--card-bg);
+	background-color: #ffffff;
 	border-radius: 16rpx;
 	padding: 30rpx;
 	margin-bottom: 25rpx;
-	box-shadow: var(--shadow-sm);
+	box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.05);
 }
 
 .calendar-header {
@@ -563,7 +563,7 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 .calendar-title {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: var(--text-primary);
+	color: #333333;
 	text-align: center;
 	margin-bottom: 20rpx;
 	display: flex;
@@ -573,7 +573,7 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 
 .month-switch {
 	font-size: 28rpx;
-	color: var(--text-secondary);
+	color: #666666;
 	margin: 0 30rpx;
 	padding: 10rpx;
 }
@@ -588,7 +588,7 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 	width: 14.28%;
 	text-align: center;
 	font-size: 26rpx;
-	color: var(--text-secondary);
+	color: #666666;
 }
 
 .calendar-body {
@@ -611,12 +611,17 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 }
 
 .calendar-day.has-record {
-	background-color: var(--primary-light);
+	background: linear-gradient(135deg, #3cc51f, #44d81d);
 	border-radius: 8rpx;
 }
 
+.calendar-day.has-record .day-number {
+	color: #ffffff;
+	font-weight: 500;
+}
+
 .calendar-day.today {
-	background-color: var(--primary-color);
+	background-color: #3cc51f;
 	border-radius: 8rpx;
 }
 
@@ -626,7 +631,7 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 
 .day-number {
 	font-size: 28rpx;
-	color: var(--text-primary);
+	color: #333333;
 	margin-bottom: 4rpx;
 }
 
@@ -635,14 +640,25 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 	flex-direction: column;
 	align-items: center;
 	font-size: 20rpx;
+	line-height: 1.2;
+}
+
+.day-amount .income {
+	color: #ffffff;
+	font-weight: 500;
+}
+
+.day-amount .expense {
+	color: #ffffff;
+	font-weight: 500;
 }
 
 /* 记录列表样式 */
 .record-list {
-	background-color: var(--card-bg);
+	background-color: #ffffff;
 	border-radius: 16rpx;
 	padding: 30rpx;
-	box-shadow: var(--shadow-sm);
+	box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.05);
 }
 
 .list-header {
@@ -655,12 +671,12 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 .list-title {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: var(--text-primary);
+	color: #333333;
 }
 
 .list-count {
 	font-size: 24rpx;
-	color: var(--text-secondary);
+	color: #666666;
 }
 
 .date-group {
@@ -669,10 +685,10 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 
 .date-title {
 	font-size: 26rpx;
-	color: var(--text-secondary);
+	color: #666666;
 	margin-bottom: 15rpx;
 	padding-left: 20rpx;
-	border-left: 4rpx solid var(--primary-color);
+	border-left: 4rpx solid #3cc51f;
 }
 
 .record-item {
@@ -683,7 +699,7 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 	background-color: #ffffff;
 	border-radius: 12rpx;
 	margin-bottom: 15rpx;
-	box-shadow: var(--shadow-sm);
+	box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.05);
 }
 
 .record-left {
@@ -693,13 +709,13 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 
 .record-category {
 	font-size: 28rpx;
-	color: var(--text-primary);
+	color: #333333;
 	margin-bottom: 5rpx;
 }
 
 .record-time {
 	font-size: 24rpx;
-	color: var(--text-secondary);
+	color: #666666;
 }
 
 .record-amount {
@@ -707,9 +723,17 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 	font-weight: 600;
 }
 
+.record-amount.income {
+	color: #3cc51f;
+}
+
+.record-amount.expense {
+	color: #ff3b30;
+}
+
 /* 弹窗样式 */
 .balance-edit-popup {
-	background-color: var(--card-bg);
+	background-color: #ffffff;
 	border-radius: 16rpx;
 	width: 600rpx;
 	padding: 30rpx;
@@ -725,17 +749,37 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 .popup-title {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: var(--text-primary);
+	color: #333333;
 }
 
 .popup-close {
 	font-size: 40rpx;
-	color: var(--text-secondary);
+	color: #666666;
 	padding: 10rpx;
 }
 
 .popup-content {
 	margin-bottom: 30rpx;
+}
+
+.form-item {
+	margin-bottom: 20rpx;
+}
+
+.form-item .label {
+	font-size: 26rpx;
+	color: #666666;
+	margin-bottom: 10rpx;
+}
+
+.form-item input {
+	width: 100%;
+	height: 80rpx;
+	border: 2rpx solid #e5e5e5;
+	border-radius: 12rpx;
+	padding: 0 20rpx;
+	font-size: 28rpx;
+	background-color: #f8f8f8;
 }
 
 .popup-footer {
@@ -744,13 +788,20 @@ import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance
 	gap: 20rpx;
 }
 
+.btn {
+	padding: 20rpx 40rpx;
+	border-radius: 12rpx;
+	font-size: 28rpx;
+	font-weight: 500;
+}
+
 .cancel-btn {
-	background-color: var(--border-color);
-	color: var(--text-secondary);
+	background-color: #f5f5f5;
+	color: #666666;
 }
 
 .confirm-btn {
-	background-color: var(--primary-color);
+	background-color: #3cc51f;
 	color: #ffffff;
 }
 </style>

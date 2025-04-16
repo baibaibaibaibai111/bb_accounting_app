@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "预算",
+  "usingComponents": {
+    "uni-popup": "../../node-modules/@dcloudio/uni-ui/lib/uni-popup/uni-popup"
+  }
+}
