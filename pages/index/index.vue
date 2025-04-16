@@ -1,37 +1,90 @@
 <template>
 	<view class="container">
-		<!-- 余额卡片 -->
-		<view class="balance-card">
-			<view class="balance-title">当前余额</view>
-			<view class="balance-amount">¥{{balance.total}}</view>
-			<view class="balance-detail">
-				<view class="balance-item">
-					<text class="label">支付宝</text>
-					<text class="amount">¥{{balance.alipay}}</text>
-				</view>
-				<view class="balance-item">
-					<text class="label">微信</text>
-					<text class="amount">¥{{balance.wechat}}</text>
-				</view>
+		<!-- Tab 切换 -->
+		<view class="tab-container">
+			<view 
+				class="tab-item" 
+				:class="{ active: currentTab === 'list' }"
+				@click="currentTab = 'list'"
+			>
+				收支视图
 			</view>
-			<view class="balance-edit" @click="showBalanceEdit">编辑余额</view>
+			<view 
+				class="tab-item" 
+				:class="{ active: currentTab === 'calendar' }"
+				@click="currentTab = 'calendar'"
+			>
+				日历视图
+			</view>
 		</view>
 		
-		<!-- 收支统计 -->
-		<view class="statistics">
-			<view class="stat-item">
-				<text class="stat-label">本月收入</text>
-				<text class="stat-value income">+¥{{monthlyStats.income}}</text>
+		<!-- 收支视图 -->
+		<view v-if="currentTab === 'list'">
+			<!-- 余额卡片 -->
+			<view class="balance-card">
+				<view class="balance-title">当前余额</view>
+				<view class="balance-amount">¥{{balance.total}}</view>
+				<view class="balance-detail">
+					<view class="balance-item">
+						<text class="label">支付宝</text>
+						<text class="amount">¥{{balance.alipay}}</text>
+					</view>
+					<view class="balance-item">
+						<text class="label">微信</text>
+						<text class="amount">¥{{balance.wechat}}</text>
+					</view>
+				</view>
+				<view class="balance-edit" @click="showBalanceEdit">编辑余额</view>
 			</view>
-			<view class="stat-item">
-				<text class="stat-label">本月支出</text>
-				<text class="stat-value expense">-¥{{monthlyStats.expense}}</text>
+			
+			<!-- 收支统计 -->
+			<view class="statistics">
+				<view class="stat-item">
+					<text class="stat-label">本月收入</text>
+					<text class="stat-value income">+¥{{monthlyStats.income}}</text>
+				</view>
+				<view class="stat-item">
+					<text class="stat-label">本月支出</text>
+					<text class="stat-value expense">-¥{{monthlyStats.expense}}</text>
+				</view>
+				<view class="stat-item">
+					<text class="stat-label">本月结余</text>
+					<text class="stat-value" :class="monthlyStats.balance >= 0 ? 'income' : 'expense'">
+						{{monthlyStats.balance >= 0 ? '+' : ''}}¥{{monthlyStats.balance}}
+					</text>
+				</view>
 			</view>
-			<view class="stat-item">
-				<text class="stat-label">本月结余</text>
-				<text class="stat-value" :class="monthlyStats.balance >= 0 ? 'income' : 'expense'">
-					{{monthlyStats.balance >= 0 ? '+' : ''}}¥{{monthlyStats.balance}}
-				</text>
+		</view>
+		
+		<!-- 日历视图 -->
+		<view v-else class="calendar-container">
+			<view class="calendar-header">
+				<view class="calendar-title">
+					<text class="month-switch" @click="prevMonth">◀</text>
+					{{currentYear}}年{{currentMonth + 1}}月
+					<text class="month-switch" @click="nextMonth">▶</text>
+				</view>
+				<view class="calendar-weekdays">
+					<view class="weekday" v-for="day in weekdays" :key="day">{{day}}</view>
+				</view>
+			</view>
+			<view class="calendar-body">
+				<view 
+					class="calendar-day" 
+					v-for="(day, index) in calendarDays" 
+					:key="index"
+					:class="{
+						'other-month': !day.isCurrentMonth,
+						'has-record': day.hasRecord
+					}"
+					@click="showDayRecords(day)"
+				>
+					<text class="day-number">{{day.day}}</text>
+					<view class="day-amount" v-if="day.hasRecord">
+						<text class="income" v-if="day.income > 0">+{{day.income}}</text>
+						<text class="expense" v-if="day.expense > 0">-{{day.expense}}</text>
+					</view>
+				</view>
 			</view>
 		</view>
 		
@@ -58,6 +111,7 @@
 			</uni-swipe-action>
 		</view>
 		
+		<!-- 编辑余额弹窗 -->
 		<uni-popup ref="balancePopup" type="center">
 			<view class="balance-edit-popup">
 				<view class="popup-title">编辑余额</view>
@@ -81,9 +135,14 @@
 <script>
 import { getRecords, saveRecords, calculateMonthlyStats, getBalance, saveBalance } from '@/utils/storage.js'
 
-export default {
-	data() {
-		return {
+	export default {
+		data() {
+			return {
+			currentTab: 'list',
+			weekdays: ['日', '一', '二', '三', '四', '五', '六'],
+			currentYear: new Date().getFullYear(),
+			currentMonth: new Date().getMonth(),
+			calendarDays: [],
 			balance: {
 				total: 0,
 				alipay: 0,
@@ -196,17 +255,107 @@ export default {
 					icon: 'error'
 				})
 			}
+		},
+		// 生成日历数据
+		generateCalendar() {
+			const days = []
+			const firstDay = new Date(this.currentYear, this.currentMonth, 1)
+			const lastDay = new Date(this.currentYear, this.currentMonth + 1, 0)
+			const firstDayWeek = firstDay.getDay()
+			const lastDayDate = lastDay.getDate()
+			
+			// 添加上个月的日期
+			for (let i = firstDayWeek - 1; i >= 0; i--) {
+				const date = new Date(this.currentYear, this.currentMonth, -i)
+				days.push({
+					day: date.getDate(),
+					isCurrentMonth: false,
+					hasRecord: false
+				})
+			}
+			
+			// 添加本月的日期
+			for (let i = 1; i <= lastDayDate; i++) {
+				const date = new Date(this.currentYear, this.currentMonth, i)
+				const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+				const dayRecords = this.records.filter(record => record.date.startsWith(dateStr))
+				
+				days.push({
+					day: i,
+					isCurrentMonth: true,
+					hasRecord: dayRecords.length > 0,
+					income: dayRecords.filter(r => r.type === 'income').reduce((sum, r) => sum + r.amount, 0),
+					expense: dayRecords.filter(r => r.type === 'expense').reduce((sum, r) => sum + r.amount, 0)
+				})
+			}
+			
+			// 添加下个月的日期
+			const remainingDays = 42 - days.length // 6行7列
+			for (let i = 1; i <= remainingDays; i++) {
+				const date = new Date(this.currentYear, this.currentMonth + 1, i)
+				days.push({
+					day: date.getDate(),
+					isCurrentMonth: false,
+					hasRecord: false
+				})
+			}
+			
+			this.calendarDays = days
+		},
+		
+		// 显示某天的记录
+		showDayRecords(day) {
+			if (!day.hasRecord) return
+			
+			const date = new Date(this.currentYear, this.currentMonth, day.day)
+			const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+			const dayRecords = this.records.filter(record => record.date.startsWith(dateStr))
+			
+			uni.showModal({
+				title: `${this.currentMonth + 1}月${day.day}日收支`,
+				content: `收入：+${day.income}\n支出：-${day.expense}`,
+				showCancel: false
+			})
+		},
+		
+		// 切换到上个月
+		prevMonth() {
+			if (this.currentMonth === 0) {
+				this.currentYear--
+				this.currentMonth = 11
+			} else {
+				this.currentMonth--
+			}
+			this.generateCalendar()
+		},
+		
+		// 切换到下个月
+		nextMonth() {
+			if (this.currentMonth === 11) {
+				this.currentYear++
+				this.currentMonth = 0
+			} else {
+				this.currentMonth++
+			}
+			this.generateCalendar()
+		}
+	},
+	watch: {
+		currentMonth() {
+			this.generateCalendar()
 		}
 	},
 	onLoad() {
 		this.loadBalance()
 		this.loadRecords()
+		this.generateCalendar()
 	},
 	onShow() {
 		this.loadBalance()
 		this.loadRecords()
+		this.generateCalendar()
+		}
 	}
-}
 </script>
 
 <style>
@@ -214,6 +363,133 @@ export default {
 		padding: 30rpx;
 		background-color: #f5f7fa;
 		min-height: 100vh;
+	}
+
+	.tab-container {
+		display: flex;
+		background-color: #fff;
+		border-radius: 16rpx;
+		padding: 20rpx;
+		margin-bottom: 25rpx;
+		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+	}
+
+	.tab-item {
+		flex: 1;
+		text-align: center;
+		padding: 20rpx;
+		font-size: 30rpx;
+		color: #666;
+		position: relative;
+	}
+
+	.tab-item.active {
+		color: #3cc51f;
+		font-weight: 500;
+	}
+
+	.tab-item.active::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 40rpx;
+		height: 4rpx;
+		background-color: #3cc51f;
+		border-radius: 2rpx;
+	}
+
+	.calendar-container {
+		background-color: #fff;
+		border-radius: 16rpx;
+		padding: 30rpx;
+		margin-bottom: 25rpx;
+		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+	}
+
+	.calendar-header {
+		margin-bottom: 20rpx;
+	}
+
+	.calendar-title {
+		font-size: 32rpx;
+		font-weight: bold;
+		color: #333;
+		text-align: center;
+		margin-bottom: 20rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.month-switch {
+		font-size: 28rpx;
+		color: #666;
+		margin: 0 30rpx;
+		padding: 10rpx;
+	}
+
+	.month-switch:active {
+		opacity: 0.7;
+	}
+
+	.calendar-weekdays {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 15rpx;
+	}
+
+	.weekday {
+		width: 14.28%;
+		text-align: center;
+		font-size: 26rpx;
+		color: #666;
+	}
+
+	.calendar-body {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.calendar-day {
+		width: 14.28%;
+		height: 100rpx;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+	}
+
+	.calendar-day.other-month {
+		opacity: 0.3;
+	}
+
+	.calendar-day.has-record {
+		background-color: rgba(60, 197, 31, 0.1);
+		border-radius: 8rpx;
+	}
+
+	.day-number {
+		font-size: 28rpx;
+		color: #333;
+		margin-bottom: 4rpx;
+	}
+
+	.day-amount {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		font-size: 20rpx;
+	}
+
+	.day-amount .income {
+		color: #3cc51f;
+	}
+
+	.day-amount .expense {
+		color: #ff3b30;
 	}
 
 	.balance-card {
