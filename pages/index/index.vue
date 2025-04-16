@@ -33,19 +33,22 @@
 		<view class="record-list">
 			<view class="list-title">收支记录</view>
 			<uni-swipe-action>
-				<uni-swipe-action-item v-for="(item, index) in records" :key="index" :right-options="options" @click="deleteRecord(item, index)">
-					<view class="record-item">
-						<view class="record-left">
-							<text class="record-category">{{item.category}}</text>
-							<text class="record-date">{{item.date}}</text>
+				<view v-for="(group, date) in groupedRecords" :key="date" class="date-group">
+					<view class="date-title">{{date}}</view>
+					<uni-swipe-action-item v-for="(item, index) in group" :key="index" :right-options="options" @click="deleteRecord(item, index)">
+						<view class="record-item">
+							<view class="record-left">
+								<text class="record-category">{{item.category}}</text>
+								<text class="record-time">{{item.date.split(' ')[1]}}</text>
+							</view>
+							<view class="record-right">
+								<text :class="['record-amount', item.type === 'income' ? 'income' : 'expense']">
+									{{item.type === 'income' ? '+' : '-'}}¥{{item.amount}}
+								</text>
+							</view>
 						</view>
-						<view class="record-right">
-							<text :class="['record-amount', item.type === 'income' ? 'income' : 'expense']">
-								{{item.type === 'income' ? '+' : '-'}}¥{{item.amount}}
-							</text>
-						</view>
-					</view>
-				</uni-swipe-action-item>
+					</uni-swipe-action-item>
+				</view>
 			</uni-swipe-action>
 		</view>
 		
@@ -89,22 +92,32 @@ export default {
 				expense: 0
 			},
 			records: [],
+			groupedRecords: {},
 			options: [{
 				text: '删除',
 				style: {
-					backgroundColor: '#ff4d4f'
+					backgroundColor: '#ff3b30'
 				}
 			}]
 		}
 	},
 	methods: {
-		// 获取收支记录
 		loadRecords() {
 			this.records = getRecords()
-			this.monthlyStats = calculateMonthlyStats()
-			this.loadBalance()
+			console.log('原始记录：', this.records)
+			
+			// 按日期分组
+			this.groupedRecords = {}
+			this.records.forEach(record => {
+				const date = record.date.split(' ')[0]
+				if (!this.groupedRecords[date]) {
+					this.groupedRecords[date] = []
+				}
+				this.groupedRecords[date].push(record)
+			})
+			
+			console.log('分组后的记录：', this.groupedRecords)
 		},
-		// 计算余额
 		loadBalance() {
 			const balance = getBalance()
 			this.balance = balance
@@ -117,13 +130,13 @@ export default {
 		},
 		deleteRecord(record, index) {
 			uni.showModal({
-				title: '确认删除',
-				content: `确定要删除这条${record.type === 'income' ? '收入' : '支出'}记录吗？`,
+				title: '提示',
+				content: '确定要删除该记录吗？',
 				success: (res) => {
 					if (res.confirm) {
 						this.records.splice(index, 1)
 						saveRecords(this.records)
-						this.monthlyStats = calculateMonthlyStats()
+						this.loadRecords()
 						uni.showToast({
 							title: '删除成功',
 							icon: 'success'
@@ -157,10 +170,14 @@ export default {
 		}
 	},
 	onLoad() {
+		this.loadBalance()
 		this.loadRecords()
+		this.monthlyStats = calculateMonthlyStats()
 	},
 	onShow() {
+		this.loadBalance()
 		this.loadRecords()
+		this.monthlyStats = calculateMonthlyStats()
 	}
 }
 </script>
@@ -308,9 +325,10 @@ export default {
 		margin-bottom: 8rpx;
 	}
 
-	.record-date {
+	.record-time {
 		font-size: 24rpx;
 		color: #999;
+		margin-top: 4rpx;
 	}
 
 	.record-right {
@@ -388,5 +406,20 @@ export default {
 		background-color: #3cc51f;
 		color: #fff;
 		border: none;
+	}
+
+	.date-group {
+		margin-bottom: 20rpx;
+		background-color: #fff;
+		border-radius: 16rpx;
+		overflow: hidden;
+	}
+
+	.date-title {
+		padding: 20rpx 30rpx;
+		font-size: 28rpx;
+		color: #666;
+		background-color: #f9f9f9;
+		border-bottom: 1rpx solid #f0f0f0;
 	}
 </style>
