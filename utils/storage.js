@@ -30,8 +30,21 @@ export function saveRecords(records) {
 
 // 获取分类列表
 export function getCategories() {
-	const categories = uni.getStorageSync(STORAGE_KEYS.CATEGORIES)
-	return categories ? JSON.parse(categories) : {
+	try {
+		const categories = uni.getStorageSync(STORAGE_KEYS.CATEGORIES)
+		if (categories) {
+			const parsed = JSON.parse(categories)
+			// 确保返回的数据结构正确
+			return {
+				income: Array.isArray(parsed.income) ? parsed.income : [],
+				expense: Array.isArray(parsed.expense) ? parsed.expense : []
+			}
+		}
+	} catch (e) {
+		console.error('获取分类失败：', e)
+	}
+	// 返回默认分类
+	return {
 		income: ['工资', '奖金', '兼职', '投资'],
 		expense: ['餐饮', '交通', '购物', '娱乐', '住房', '医疗']
 	}
