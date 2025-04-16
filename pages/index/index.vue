@@ -125,6 +125,25 @@ export default {
 			
 			console.log('分组后的记录：', this.groupedRecords)
 			
+			// 计算本月收支和结余
+			const now = new Date()
+			const currentMonth = now.getMonth()
+			const currentYear = now.getFullYear()
+			
+			this.monthlyStats.income = 0
+			this.monthlyStats.expense = 0
+			
+			this.records.forEach(record => {
+				const recordDate = new Date(record.date)
+				if (recordDate.getMonth() === currentMonth && recordDate.getFullYear() === currentYear) {
+					if (record.type === 'income') {
+						this.monthlyStats.income += Number(record.amount)
+					} else {
+						this.monthlyStats.expense += Number(record.amount)
+					}
+				}
+			})
+			
 			// 计算本月结余
 			this.monthlyStats.balance = this.monthlyStats.income - this.monthlyStats.expense
 		},
@@ -182,12 +201,10 @@ export default {
 	onLoad() {
 		this.loadBalance()
 		this.loadRecords()
-		this.monthlyStats = calculateMonthlyStats()
 	},
 	onShow() {
 		this.loadBalance()
 		this.loadRecords()
-		this.monthlyStats = calculateMonthlyStats()
 	}
 }
 </script>
